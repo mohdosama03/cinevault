@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CineVault — Book Your Experience</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=Playfair+Display:ital@1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav" id="nav">
+  <div class="nav-logo">CINE<span>VAULT</span></div>
+  <div class="nav-links">
+    <a href="#" class="nav-link active" onclick="showPage('home')">Home</a>
+    <a href="#" class="nav-link" onclick="showPage('movies')">Movies</a>
+    <a href="#" class="nav-link" onclick="showPage('contact')">Contact</a>
+  </div>
+  <div class="nav-search">
+    <input type="text" id="searchInput" placeholder="Search movies..." oninput="filterMovies(this.value)">
+    <span class="search-icon">⌕</span>
+  </div>
+</nav>
+
+<!-- HOME PAGE -->
+<div id="page-home" class="page active">
+  <div class="hero">
+    <div class="hero-bg">
+      <div class="film-strip top"></div>
+      <div class="film-strip bottom"></div>
+      <div class="hero-orb orb1"></div>
+      <div class="hero-orb orb2"></div>
+    </div>
+    <div class="hero-content">
+      <p class="hero-eyebrow">🎬 NOW SHOWING</p>
+      <h1 class="hero-title">Book Your<br><em>Perfect</em><br>Experience</h1>
+      <p class="hero-sub">Premium cinema. Unforgettable moments.</p>
+    </div>
+    <div class="ticker-wrap">
+      <div class="ticker">
+        <span>NOW SHOWING</span><span>★</span><span>BOOK ONLINE</span><span>★</span>
+        <span>4K SCREENS</span><span>★</span><span>DOLBY ATMOS</span><span>★</span>
+        <span>IMAX AVAILABLE</span><span>★</span><span>NOW SHOWING</span><span>★</span>
+        <span>BOOK ONLINE</span><span>★</span><span>4K SCREENS</span><span>★</span>
+        <span>DOLBY ATMOS</span><span>★</span><span>IMAX AVAILABLE</span><span>★</span>
+      </div>
+    </div>
+  </div>
+
+  <section class="movies-section">
+    <div class="section-header">
+      <h2 class="section-title">Featured Films</h2>
+      <a href="#" class="see-all" onclick="showPage('movies')">View All →</a>
+    </div>
+    <div class="movies-grid" id="homeMoviesGrid"></div>
+  </section>
+
+  <section class="promo-section">
+    <div class="promo-card">
+      <div class="promo-icon">🍿</div>
+      <h3>Snack Combos</h3>
+      <p>Add combos during checkout. Popcorn, nachos, drinks & more!</p>
+    </div>
+    <div class="promo-card">
+      <div class="promo-icon">🎟️</div>
+      <h3>Group Bookings</h3>
+      <p>Book 10+ seats and get 15% off. Perfect for corporate outings.</p>
+    </div>
+    <div class="promo-card">
+      <div class="promo-icon">⭐</div>
+      <h3>VIP Lounge</h3>
+      <p>Ultra-premium recliner seats with butler service available.</p>
+    </div>
+  </section>
+</div>
+
+<!-- MOVIES LIST PAGE -->
+<div id="page-movies" class="page">
+  <div class="page-header">
+    <h2 class="page-title">All Movies</h2>
+    <div class="filter-tabs">
+      <button class="filter-btn active" onclick="filterByGenre('All', this)">All</button>
+      <button class="filter-btn" onclick="filterByGenre('Action', this)">Action</button>
+      <button class="filter-btn" onclick="filterByGenre('Sci-Fi', this)">Sci-Fi</button>
+      <button class="filter-btn" onclick="filterByGenre('Drama', this)">Drama</button>
+      <button class="filter-btn" onclick="filterByGenre('Horror', this)">Horror</button>
+      <button class="filter-btn" onclick="filterByGenre('Comedy', this)">Comedy</button>
+    </div>
+  </div>
+  <div class="movies-grid" id="allMoviesGrid"></div>
+</div>
+
+<!-- MOVIE DETAIL PAGE -->
+<div id="page-detail" class="page">
+  <button class="back-btn" onclick="goBack()">← Back</button>
+  <div id="movieDetail"></div>
+</div>
+
+<!-- SEAT SELECTION PAGE -->
+<div id="page-seats" class="page">
+  <button class="back-btn" onclick="showPage('detail')">← Back</button>
+  <div class="seats-page">
+    <div class="seats-info">
+      <h2 id="seatMovieTitle"></h2>
+      <p id="seatShowTime"></p>
+    </div>
+    <div class="screen-wrap">
+      <div class="screen">
+        <span>SCREEN</span>
+        <div class="screen-glow"></div>
+      </div>
+    </div>
+    <div class="seat-legend">
+      <span class="legend-item"><span class="legend-dot available"></span>Available</span>
+      <span class="legend-item"><span class="legend-dot booked"></span>Booked</span>
+      <span class="legend-item"><span class="legend-dot selected"></span>Selected</span>
+    </div>
+    <div class="seats-container" id="seatsContainer"></div>
+    <div class="seats-summary">
+      <div>
+        <span>Selected: <strong id="selectedSeatsDisplay">None</strong></span>
+        <span>Total: <strong id="totalPriceDisplay">₹0</strong></span>
+      </div>
+      <button class="btn-primary" onclick="proceedToSnacks()">Add Snacks & Continue</button>
+    </div>
+  </div>
+</div>
+
+<!-- SNACKS PAGE -->
+<div id="page-snacks" class="page">
+  <button class="back-btn" onclick="showPage('seats')">← Back</button>
+  <div class="snacks-page">
+    <h2 class="page-title">🍿 Choose Your Combo</h2>
+    <p style="color:var(--muted);text-align:center;margin-bottom:2rem;">Optional — Skip to proceed directly</p>
+    <div class="snacks-grid">
+      <div class="snack-card" onclick="toggleSnack(this, 'Popcorn + Coke', 250)">
+        <div class="snack-emoji">🍿🥤</div>
+        <h3>Classic Combo</h3>
+        <p>Large Popcorn + Coke</p>
+        <strong>₹250</strong>
+        <div class="snack-check">✓</div>
+      </div>
+      <div class="snack-card" onclick="toggleSnack(this, 'Nachos + Pepsi', 300)">
+        <div class="snack-emoji">🧀🥤</div>
+        <h3>Fiesta Combo</h3>
+        <p>Nachos + Pepsi</p>
+        <strong>₹300</strong>
+        <div class="snack-check">✓</div>
+      </div>
+      <div class="snack-card" onclick="toggleSnack(this, 'Burger + Shake', 450)">
+        <div class="snack-emoji">🍔🧃</div>
+        <h3>Mega Combo</h3>
+        <p>Burger + Milkshake</p>
+        <strong>₹450</strong>
+        <div class="snack-check">✓</div>
+      </div>
+      <div class="snack-card" onclick="toggleSnack(this, 'Hot Dog + Sprite', 220)">
+        <div class="snack-emoji">🌭🥤</div>
+        <h3>Quick Bite</h3>
+        <p>Hot Dog + Sprite</p>
+        <strong>₹220</strong>
+        <div class="snack-check">✓</div>
+      </div>
+    </div>
+    <div class="snacks-total-bar">
+      <div>
+        <p style="color:var(--muted);font-size:0.85rem;">Snacks Total</p>
+        <strong id="snacksTotalDisplay">₹0</strong>
+      </div>
+      <button class="btn-primary" onclick="showPage('payment')">Proceed to Payment →</button>
+    </div>
+  </div>
+</div>
+
+<!-- PAYMENT PAGE -->
+<div id="page-payment" class="page">
+  <button class="back-btn" onclick="showPage('snacks')">← Back</button>
+  <div class="payment-page">
+    <div class="payment-summary-card">
+      <h3>Booking Summary</h3>
+      <div id="paymentSummary"></div>
+    </div>
+    <div class="payment-methods">
+      <h3>Payment Method</h3>
+      <div class="method-tabs">
+        <button class="method-tab active" onclick="selectMethod(this,'card')">💳 Card</button>
+        <button class="method-tab" onclick="selectMethod(this,'upi')">📱 UPI</button>
+        <button class="method-tab" onclick="selectMethod(this,'cash')">💵 Cash</button>
+      </div>
+
+      <div id="method-card" class="method-form active">
+        <div class="form-group">
+          <label>Card Number</label>
+          <input type="text" placeholder="1234 5678 9012 3456" maxlength="19" oninput="formatCard(this)">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Expiry</label>
+            <input type="text" placeholder="MM/YY" maxlength="5">
+          </div>
+          <div class="form-group">
+            <label>CVV</label>
+            <input type="password" placeholder="***" maxlength="3">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Name on Card</label>
+          <input type="text" placeholder="John Doe">
+        </div>
+      </div>
+
+      <div id="method-upi" class="method-form">
+        <div class="form-group">
+          <label>UPI ID</label>
+          <input type="text" placeholder="yourname@upi">
+        </div>
+        <div class="upi-apps">
+          <span class="upi-app" onclick="this.classList.toggle('selected')">GPay</span>
+          <span class="upi-app" onclick="this.classList.toggle('selected')">PhonePe</span>
+          <span class="upi-app" onclick="this.classList.toggle('selected')">Paytm</span>
+          <span class="upi-app" onclick="this.classList.toggle('selected')">BHIM</span>
+        </div>
+      </div>
+
+      <div id="method-cash" class="method-form">
+        <div class="cash-info">
+          <div class="cash-icon">💵</div>
+          <h4>Pay at Counter</h4>
+          <p>Show your booking ID at the cinema counter and pay in cash before the show.</p>
+        </div>
+      </div>
+
+      <div class="timer-bar">
+        <span>⏳ Session expires in</span>
+        <span id="paymentTimer" class="timer-count">10:00</span>
+      </div>
+      <button class="btn-primary btn-pay" onclick="processPayment()">Pay Now</button>
+    </div>
+  </div>
+</div>
+
+<!-- TICKET CONFIRMATION PAGE -->
+<div id="page-ticket" class="page">
+  <div class="ticket-page">
+    <div class="success-animation">
+      <div class="success-ring"></div>
+      <div class="success-check">✓</div>
+    </div>
+    <h2 class="ticket-heading">Booking Confirmed!</h2>
+    <div class="ticket-card" id="ticketCard">
+      <div class="ticket-top">
+        <div class="ticket-logo">CINEVAULT</div>
+        <div class="ticket-badge">CONFIRMED</div>
+      </div>
+      <div class="ticket-movie-name" id="ticketMovieName"></div>
+      <div class="ticket-divider">
+        <div class="ticket-notch left"></div>
+        <div class="ticket-dotted"></div>
+        <div class="ticket-notch right"></div>
+      </div>
+      <div class="ticket-details-grid" id="ticketDetails"></div>
+      <div class="ticket-qr">
+        <div class="qr-box" id="qrCode"></div>
+        <p class="booking-id" id="bookingIdDisplay"></p>
+      </div>
+    </div>
+    <div class="ticket-actions">
+      <button class="btn-primary" onclick="printTicket()">🖨️ Print Ticket</button>
+      <button class="btn-secondary" onclick="resetAndGoHome()">🏠 Book Another</button>
+    </div>
+  </div>
+</div>
+
+<!-- CONTACT PAGE -->
+<div id="page-contact" class="page">
+  <div class="contact-page">
+    <h2 class="page-title">Contact Us</h2>
+    <div class="contact-grid">
+      <div class="contact-info">
+        <div class="contact-item">
+          <span class="contact-icon">📍</span>
+          <div>
+            <h4>Location</h4>
+            <p>CineVault Multiplex, MG Road, Lucknow, UP 226001</p>
+          </div>
+        </div>
+        <div class="contact-item">
+          <span class="contact-icon">📞</span>
+          <div>
+            <h4>Phone</h4>
+            <p>+91 7237017281</p>
+          </div>
+        </div>
+        <div class="contact-item">
+          <span class="contact-icon">✉️</span>
+          <div>
+            <h4>Email</h4>
+            <p>hello@cinevault.in</p>
+          </div>
+        </div>
+        <div class="contact-item">
+          <span class="contact-icon">🕐</span>
+          <div>
+            <h4>Hours</h4>
+            <p>Mon–Sun: 9:00 AM – 11:00 PM</p>
+          </div>
+        </div>
+      </div>
+      <div class="contact-form-wrap">
+        <div class="form-group">
+          <label>Your Name</label>
+          <input type="text" placeholder="">
+        </div>
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" placeholder="">
+        </div>
+        <div class="form-group">
+          <label>Message</label>
+          <textarea rows="4" placeholder="Write your message..."></textarea>
+        </div>
+        <button class="btn-primary" onclick="alert('Message sent! We\'ll get back to you soon.')">Send Message</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SUCCESS POPUP -->
+<div id="successPopup" class="popup-overlay" style="display:none">
+  <div class="popup-card">
+    <div class="popup-spinner"></div>
+    <h3>Processing Payment...</h3>
+    <p>Please wait</p>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
