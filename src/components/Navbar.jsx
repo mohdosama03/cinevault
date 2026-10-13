@@ -1,5 +1,5 @@
 import React from 'react';
-import { Search, Ticket, KeyRound } from 'lucide-react';
+import { Search, Ticket, KeyRound, LogOut } from 'lucide-react';
 
 export default function Navbar({ 
   currentPage, 
@@ -9,7 +9,9 @@ export default function Navbar({
   isSearching, 
   bookingsCount, 
   onOpenBookings, 
-  onOpenApiModal 
+  onOpenApiModal,
+  currentUser,
+  onSignOut,
 }) {
   return (
     <nav className="nav" id="main-nav">
@@ -82,6 +84,14 @@ export default function Navbar({
           <Ticket size={14} />
           <span>Tickets {bookingsCount > 0 && `(${bookingsCount})`}</span>
         </button>
+
+        <div className="nav-account">
+          <span className="nav-account-name" title={currentUser?.email}>{currentUser?.name}</span>
+          <button className="nav-btn-icon nav-signout" onClick={onSignOut} title="Sign out" aria-label="Sign out">
+            <LogOut size={14} />
+            <span>Sign out</span>
+          </button>
+        </div>
       </div>
     </nav>
   );

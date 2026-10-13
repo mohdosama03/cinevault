@@ -9,6 +9,8 @@ import PaymentView from './components/PaymentView';
 import TicketView from './components/TicketView';
 import ApiKeyModal from './components/ApiKeyModal';
 import MyBookingsModal from './components/MyBookingsModal';
+import AuthGate from './components/AuthGate';
+import { getCurrentUser, signOut } from './services/auth';
 import { initialMovies } from './data/initialMovies';
 import { searchMoviesOnline, fetchMovieDetails } from './services/movieApi';
 import { Sparkles, Clapperboard, Film, ArrowRight, ShieldCheck, Mail, Phone, MapPin, Clock } from 'lucide-react';
@@ -16,6 +18,7 @@ import { Sparkles, Clapperboard, Film, ArrowRight, ShieldCheck, Mail, Phone, Map
 const GENRES = ['All', 'Action', 'Sci-Fi', 'Drama', 'Adventure', 'Comedy', 'Thriller'];
 
 export default function App() {
+  const [currentUser, setCurrentUser] = useState(getCurrentUser);
   const [currentPage, setCurrentPage] = useState('home');
   const [movies, setMovies] = useState(initialMovies);
   const [selectedGenre, setSelectedGenre] = useState('All');
@@ -34,7 +37,8 @@ export default function App() {
   // LocalStorage Bookings
   const [savedBookings, setSavedBookings] = useState(() => {
     try {
-      const data = localStorage.getItem('cv_bookings');
+      const user = getCurrentUser();
+      const data = user ? localStorage.getItem(`cv_bookings:${user.email}`) : null;
       return data ? JSON.parse(data) : [];
     } catch {
       return [];
@@ -116,11 +120,39 @@ export default function App() {
     const updated = [ticket, ...savedBookings];
     setSavedBookings(updated);
     try {
-      localStorage.setItem('cv_bookings', JSON.stringify(updated));
+      localStorage.setItem(`cv_bookings:${currentUser.email}`, JSON.stringify(updated));
     } catch (e) {
       console.error('Failed to save to localStorage:', e);
     }
     navigateTo('ticket');
+  };
+
+  const handleAuthenticated = (user) => {
+    setCurrentUser(user);
+    setCurrentPage('home');
+    setSelectedMovie(null);
+    setSelectedSeats([]);
+    setSelectedSnacks([]);
+    try {
+      const data = localStorage.getItem(`cv_bookings:${user.email}`);
+      setSavedBookings(data ? JSON.parse(data) : []);
+    } catch {
+      setSavedBookings([]);
+    }
+  };
+
+  const handleSignOut = () => {
+    signOut();
+    setCurrentUser(null);
+    setSavedBookings([]);
+    setSelectedMovie(null);
+    setSelectedShowtime('');
+    setSelectedSeats([]);
+    setSeatsTotal(0);
+    setSelectedSnacks([]);
+    setSnacksTotal(0);
+    setConfirmedTicket(null);
+    setCurrentPage('home');
   };
 
   // Reset booking to start another
@@ -142,6 +174,10 @@ export default function App() {
     return g.toLowerCase().includes(selectedGenre.toLowerCase());
   });
 
+  if (!currentUser) {
+    return <AuthGate onAuthenticated={handleAuthenticated} />;
+  }
+
   return (
     <div className="cinevault-app">
       <Navbar 
@@ -153,6 +189,8 @@ export default function App() {
         bookingsCount={savedBookings.length}
         onOpenBookings={() => setIsBookingsModalOpen(true)}
         onOpenApiModal={() => setIsApiModalOpen(true)}
+        currentUser={currentUser}
+        onSignOut={handleSignOut}
       />
 
       <main style={{ minHeight: '80vh' }}>
